@@ -37,6 +37,15 @@ class Chat implements MessageComponentInterface {
                     'msg' => $data->msg // Envia o código como texto sem modificações
                 ]);
                 break;
+            
+            case 'image':
+                // Tratamento específico para envio de imagens
+                $this->broadcastMessage($from, [
+                    'type' => 'image',
+                    'username' => $data->username ?? 'Anônimo',
+                    'content' => $data->content // Envia a imagem como base64
+                ]);
+                break;
         }
     }
     

@@ -30,12 +30,6 @@ $(document).ready(function() {
                 <pre><code class="language-plaintext">${data.msg}</code></pre>
             `);
             Prism.highlightAll();
-        } else if (data.type === 'image') {
-            // Exibe a imagem com uma opção para ampliação em um modal
-            $('#messageArea').append(`
-                <div><strong>${sender}:</strong> enviou uma imagem.</div>
-                <img src="${data.content}" class="chat-image" style="max-width: 100px; height: auto; cursor: pointer;" />
-            `);
         }
     };
 
@@ -51,6 +45,8 @@ $(document).ready(function() {
                         <pre><code class="language-plaintext">${message}</code></pre>
                     `);
                     Prism.highlightAll();
+
+                    console.log("Enviando código:", message);
 
                     conn.send(JSON.stringify({
                         type: messageType, 
@@ -83,38 +79,5 @@ $(document).ready(function() {
             e.preventDefault();
             sendMessage();
         }
-    });
-
-    // Tratamento do evento de colagem para capturar e enviar imagens
-    $(document).on('paste', function(e) {
-        var items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        for (var index in items) {
-            var item = items[index];
-            if (item.kind === 'file' && item.type.startsWith('image')) { // Garantindo que é uma imagem
-                var blob = item.getAsFile();
-                var reader = new FileReader();
-                reader.onload = function(event) {
-                    // Enviando a imagem como base64 através do WebSocket
-                    conn.send(JSON.stringify({
-                        type: 'image', 
-                        username: username, 
-                        content: event.target.result // Imagem em base64
-                    }));
-                };
-                reader.readAsDataURL(blob);
-            }
-        }
-    });
-
-    // Função para exibir a imagem em um modal ao clicar
-    $(document).on('click', '.chat-image', function() {
-        var src = $(this).attr('src');
-        $('#imageModal img').attr('src', src);
-        $('#imageModal').show();
-    });
-
-    // Função para fechar o modal ao clicar fora da imagem
-    $('#imageModal').click(function() {
-        $(this).hide();
     });
 });
