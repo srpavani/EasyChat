@@ -29,12 +29,22 @@ class Chat implements MessageComponentInterface {
                 ]);
                 break;
                 
+            case 'image':
+                // Tratamento para envio de imagens
+                $this->broadcastMessage($from, [
+                    'type' => 'image',
+                    'username' => $data->username ?? 'Anônimo',
+                    'filename' => $data->filename,
+                    'content' => $data->content // Envia a imagem como base64
+                ]);
+                break;
+
             case 'code':
                 // Tratamento específico para envio de código
                 $this->broadcastMessage($from, [
                     'type' => 'code',
                     'username' => $data->username ?? 'Anônimo',
-                    'msg' => $data->msg // Envia o código como texto sem modificações
+                    'msg' => $data->msg // Envia o código como texto
                 ]);
                 break;
         }
@@ -47,10 +57,14 @@ class Chat implements MessageComponentInterface {
             }
         }
     }
-
+    
     public function onClose(ConnectionInterface $conn) {
         $this->clients->detach($conn);
         echo "Connection {$conn->resourceId} has disconnected\n";
+        if ($this->clients->count() == 0) {
+            echo "Last user left. Chat cleared.\n";
+            // Adicione aqui a lógica de limpeza do chat
+        }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
