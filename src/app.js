@@ -94,6 +94,12 @@ $(document).ready(function() {
                 var blob = item.getAsFile();
                 var reader = new FileReader();
                 reader.onload = function(event) {
+                    // Exibe a imagem localmente
+                    $('#messageArea').append(`
+                        <div><strong>${username || 'Eu'}:</strong> enviou uma imagem.</div>
+                        <img src="${event.target.result}" class="chat-image" style="max-width: 100px; height: auto; cursor: pointer;" />
+                    `);
+
                     // Enviando a imagem como base64 através do WebSocket
                     conn.send(JSON.stringify({
                         type: 'image', 
