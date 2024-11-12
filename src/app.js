@@ -25,13 +25,14 @@ $(document).ready(function() {
         if (data.type === 'text') {
             $('#messageArea').append('<div><strong>' + sender + ':</strong> ' + data.msg + '</div>');
         } else if (data.type === 'code') {
+            // Escapa o código antes de exibir para evitar interpretação de HTML
+            const escapedCode = escapeHtml(data.msg);
             $('#messageArea').append(`
                 <div><strong>${sender}:</strong> enviou um código:</div>
-                <pre><code class="language-plaintext">${data.msg}</code></pre>
+                <pre><code class="language-plaintext">${escapedCode}</code></pre>
             `);
             Prism.highlightAll();
         } else if (data.type === 'image') {
-            // Exibe a imagem com uma opção para ampliação em um modal
             $('#messageArea').append(`
                 <div><strong>${sender}:</strong> enviou uma imagem.</div>
                 <img src="${data.content}" class="chat-image" style="max-width: 100px; height: auto; cursor: pointer;" />
@@ -46,9 +47,11 @@ $(document).ready(function() {
                 var messageType = message.includes(';') || message.includes('    ') ? 'code' : 'text';
 
                 if (messageType === 'code') {
+                    // Escapa o código localmente antes de exibir
+                    const escapedMessage = escapeHtml(message);
                     $('#messageArea').append(`
                         <div><strong>${username || 'Eu'}:</strong> enviou um código:</div>
-                        <pre><code class="language-plaintext">${message}</code></pre>
+                        <pre><code class="language-plaintext">${escapedMessage}</code></pre>
                     `);
                     Prism.highlightAll();
 
@@ -94,17 +97,15 @@ $(document).ready(function() {
                 var blob = item.getAsFile();
                 var reader = new FileReader();
                 reader.onload = function(event) {
-                    // Exibe a imagem localmente
                     $('#messageArea').append(`
                         <div><strong>${username || 'Eu'}:</strong> enviou uma imagem.</div>
                         <img src="${event.target.result}" class="chat-image" style="max-width: 100px; height: auto; cursor: pointer;" />
                     `);
 
-                    // Enviando a imagem como base64 através do WebSocket
                     conn.send(JSON.stringify({
                         type: 'image', 
                         username: username, 
-                        content: event.target.result // Imagem em base64
+                        content: event.target.result
                     }));
                 };
                 reader.readAsDataURL(blob);
@@ -123,4 +124,14 @@ $(document).ready(function() {
     $('#imageModal').click(function() {
         $(this).hide();
     });
+
+    // Função para escapar o HTML
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 });
