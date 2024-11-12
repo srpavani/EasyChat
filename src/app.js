@@ -29,7 +29,10 @@ $(document).ready(function() {
             const escapedCode = escapeHtml(data.msg);
             $('#messageArea').append(`
                 <div><strong>${sender}:</strong> enviou um código:</div>
-                <pre><code class="language-plaintext">${escapedCode}</code></pre>
+                <div style="position: relative;">
+                    <button class="copy-btn" style="position: absolute; right: 0; top: 0;">Copiar Código</button>
+                    <pre><code class="language-plaintext">${escapedCode}</code></pre>
+                </div>
             `);
             Prism.highlightAll();
         } else if (data.type === 'image') {
@@ -47,11 +50,13 @@ $(document).ready(function() {
                 var messageType = message.includes(';') || message.includes('    ') ? 'code' : 'text';
 
                 if (messageType === 'code') {
-                    // Escapa o código localmente antes de exibir
                     const escapedMessage = escapeHtml(message);
                     $('#messageArea').append(`
                         <div><strong>${username || 'Eu'}:</strong> enviou um código:</div>
-                        <pre><code class="language-plaintext">${escapedMessage}</code></pre>
+                        <div style="position: relative;">
+                            <button class="copy-btn" style="position: absolute; right: 0; top: 0;">Copiar Código</button>
+                            <pre><code class="language-plaintext">${escapedMessage}</code></pre>
+                        </div>
                     `);
                     Prism.highlightAll();
 
@@ -134,4 +139,14 @@ $(document).ready(function() {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
+
+    // Função para copiar o conteúdo do código ao clicar no botão "Copiar Código"
+    $(document).on('click', '.copy-btn', function() {
+        var codeContent = $(this).siblings('pre').text();
+        navigator.clipboard.writeText(codeContent).then(() => {
+            alert("Código copiado para a área de transferência!");
+        }).catch(err => {
+            console.error("Erro ao copiar o código: ", err);
+        });
+    });
 });
