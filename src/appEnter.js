@@ -7,7 +7,7 @@ $(document).ready(function() {
         username = $(this).val();
     });
 
-    // Tratamento do evento de colar para capturar, pré-visualizar e enviar imagens
+    // Tratamento do evento de colar para capturar e enviar imagens
     $(document).on('paste', function(e) {
         var items = (e.clipboardData || e.originalEvent.clipboardData).items;
         for (var index in items) {
@@ -16,15 +16,7 @@ $(document).ready(function() {
                 var blob = item.getAsFile();
                 var reader = new FileReader();
                 reader.onload = function(event) {
-                    // Pré-visualizar a imagem no campo de texto
-                    $('#previewImage').attr('src', event.target.result).show();
-                    
-                    // Clique para remover a pré-visualização, se desejado
-                    $('#previewImage').off('click').on('click', function() {
-                        $(this).hide();
-                    });
-
-                    // Enviar imagem com a pré-visualização confirmada
+                    // Enviando a imagem como base64 através do WebSocket
                     conn.send(JSON.stringify({
                         type: 'image', 
                         username: username, 
@@ -49,17 +41,11 @@ $(document).ready(function() {
     conn.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var sender = data.username ? data.username : 'Anônimo';
-
         if (data.type === 'text') {
             $('#messageArea').append('<div><strong>' + sender + ':</strong> ' + data.msg + '</div>');
         } else if (data.type === 'image') {
-            // Adicionar a imagem recebida com um link para visualização ampliada
             $('#messageArea').append('<div><strong>' + sender + ':</strong> enviou uma imagem.</div>');
-            $('#messageArea').append(`
-                <a href="${data.content}" target="_blank" class="image-link">
-                    <img src="${data.content}" style="max-width: 100px; height: auto; cursor: pointer;" />
-                </a>
-            `);
+            $('#messageArea').append('<img src="' + data.content + '" style="max-width: 100%; height: auto;">');
         }
     };
 

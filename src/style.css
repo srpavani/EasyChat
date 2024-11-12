@@ -8,3 +8,22 @@ body {
     margin-bottom: 10px;
     padding: 10px;
 }
+
+#previewImage {
+    display: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.chat-area img {
+    max-width: 100px;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.image-link {
+    text-decoration: none;
+}
