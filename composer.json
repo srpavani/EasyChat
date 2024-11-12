@@ -1,0 +1,17 @@
+{
+    "name": "diego/chatwebsocket",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Diogo Pavani",
+            "email": "pavanidiogo1@gmail.com"
+        }
+    ],
+    "require": {
+        "cboden/ratchet": "^0.4.4"
+    }
+}
